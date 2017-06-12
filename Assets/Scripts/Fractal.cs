@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Fractal : MonoBehaviour {
 
-    public Mesh mesh;
+    public Mesh[] meshes;
     public Material material;
     public int maxDepth;
     public float childScale;
@@ -34,7 +34,7 @@ public class Fractal : MonoBehaviour {
             InitializeMaterials();    
         }
 
-        gameObject.AddComponent<MeshFilter>().mesh = mesh;
+        gameObject.AddComponent<MeshFilter>().mesh = meshes[Random.Range(0, meshes.Length)];
         gameObject.AddComponent<MeshRenderer>().material = materials[depth, Random.Range(0, 2)];
         if (depth < maxDepth) {
             StartCoroutine(CreateChildren());
@@ -51,7 +51,7 @@ public class Fractal : MonoBehaviour {
 
     private void Initialize (Fractal parent, int childIndex)
     {
-        mesh = parent.mesh;
+        meshes = parent.meshes;
         materials = parent.materials;
         maxDepth = parent.maxDepth;
         depth = parent.depth + 1;
