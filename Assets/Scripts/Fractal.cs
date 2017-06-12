@@ -10,6 +10,8 @@ public class Fractal : MonoBehaviour {
 
     private int depth;
 
+    private Material[,] materials;
+
     private static Vector3[] childDirections = {
         Vector3.up,
         Vector3.right,
@@ -28,9 +30,12 @@ public class Fractal : MonoBehaviour {
 
     private void Start()
     {
+        if (materials == null) {
+            InitializeMaterials();    
+        }
+
         gameObject.AddComponent<MeshFilter>().mesh = mesh;
-        gameObject.AddComponent<MeshRenderer>().material = material;
-        GetComponent<MeshRenderer>().material.color = Color.Lerp(Color.white, Color.yellow, (float)depth / maxDepth);
+        gameObject.AddComponent<MeshRenderer>().material = materials[depth, Random.Range(0, 2)];
         if (depth < maxDepth) {
             StartCoroutine(CreateChildren());
         }
@@ -47,7 +52,7 @@ public class Fractal : MonoBehaviour {
     private void Initialize (Fractal parent, int childIndex)
     {
         mesh = parent.mesh;
-        material = parent.material;
+        materials = parent.materials;
         maxDepth = parent.maxDepth;
         depth = parent.depth + 1;
         childScale = parent.childScale;
@@ -55,5 +60,20 @@ public class Fractal : MonoBehaviour {
         transform.localScale = Vector3.one * childScale;
         transform.localPosition = childDirections[childIndex] * (0.5f + 0.5f * childScale);
         transform.localRotation = childOrientations[childIndex];
+    }
+
+    private void InitializeMaterials () 
+    {
+        materials = new Material[maxDepth + 1, 2];
+        for (int i = 0; i <= maxDepth; i++) {
+            float t = i / (maxDepth - 1f);
+            t *= t;
+            materials[i, 0] = new Material(material);
+            materials[i, 0].color = Color.Lerp(Color.white, Color.yellow, t);
+			materials[i, 1] = new Material(material);
+			materials[i, 1].color = Color.Lerp(Color.white, Color.cyan, t);
+        }
+        materials[maxDepth, 0].color = Color.magenta;
+        materials[maxDepth, 1].color = Color.red;
     }
 }
