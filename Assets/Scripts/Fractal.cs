@@ -7,6 +7,7 @@ public class Fractal : MonoBehaviour {
     public Material material;
     public int maxDepth;
     public float childScale;
+    public float spawnProbability;
 
     private int depth;
 
@@ -44,13 +45,16 @@ public class Fractal : MonoBehaviour {
     private IEnumerator CreateChildren () 
     {
         for (int i = 0; i < childDirections.Length; i++) {
-            yield return new WaitForSeconds(Random.Range(0.1f, 0.5f));
-            new GameObject("Fractal Child").AddComponent<Fractal>().Initialize(this, i);
+            if (Random.value < spawnProbability) {
+				yield return new WaitForSeconds(Random.Range(0.1f, 0.5f));
+				new GameObject("Fractal Child").AddComponent<Fractal>().Initialize(this, i);
+            }
         }
     }
 
     private void Initialize (Fractal parent, int childIndex)
     {
+        spawnProbability = parent.spawnProbability;
         meshes = parent.meshes;
         materials = parent.materials;
         maxDepth = parent.maxDepth;
