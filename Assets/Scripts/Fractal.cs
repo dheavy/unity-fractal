@@ -8,9 +8,10 @@ public class Fractal : MonoBehaviour {
     public int maxDepth;
     public float childScale;
     public float spawnProbability;
+    public float maxRotationSpeed;
 
+    private float rotationSpeed; 
     private int depth;
-
     private Material[,] materials;
 
     private static Vector3[] childDirections = {
@@ -29,8 +30,10 @@ public class Fractal : MonoBehaviour {
         Quaternion.Euler(-90f, 0f, 0f)
     };
 
-    private void Start()
+    private void Start ()
     {
+        rotationSpeed = Random.Range(-maxRotationSpeed, maxRotationSpeed);
+
         if (materials == null) {
             InitializeMaterials();    
         }
@@ -42,12 +45,17 @@ public class Fractal : MonoBehaviour {
         }
     }
 
+    private void Update ()
+    {
+        transform.Rotate(0f, rotationSpeed * Time.deltaTime, 0f);
+    }
+
     private IEnumerator CreateChildren () 
     {
         for (int i = 0; i < childDirections.Length; i++) {
             if (Random.value < spawnProbability) {
-				yield return new WaitForSeconds(Random.Range(0.1f, 0.5f));
-				new GameObject("Fractal Child").AddComponent<Fractal>().Initialize(this, i);
+                yield return new WaitForSeconds(Random.Range(0.1f, 0.5f));
+                new GameObject("Fractal Child").AddComponent<Fractal>().Initialize(this, i);
             }
         }
     }
@@ -55,6 +63,7 @@ public class Fractal : MonoBehaviour {
     private void Initialize (Fractal parent, int childIndex)
     {
         spawnProbability = parent.spawnProbability;
+        maxRotationSpeed = parent.maxRotationSpeed;
         meshes = parent.meshes;
         materials = parent.materials;
         maxDepth = parent.maxDepth;
@@ -74,8 +83,8 @@ public class Fractal : MonoBehaviour {
             t *= t;
             materials[i, 0] = new Material(material);
             materials[i, 0].color = Color.Lerp(Color.white, Color.yellow, t);
-			materials[i, 1] = new Material(material);
-			materials[i, 1].color = Color.Lerp(Color.white, Color.cyan, t);
+            materials[i, 1] = new Material(material);
+            materials[i, 1].color = Color.Lerp(Color.white, Color.cyan, t);
         }
         materials[maxDepth, 0].color = Color.magenta;
         materials[maxDepth, 1].color = Color.red;
