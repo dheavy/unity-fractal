@@ -9,6 +9,7 @@ public class Fractal : MonoBehaviour {
     public float childScale;
     public float spawnProbability;
     public float maxRotationSpeed;
+    public float maxTwist;
 
     private float rotationSpeed; 
     private int depth;
@@ -33,6 +34,7 @@ public class Fractal : MonoBehaviour {
     private void Start ()
     {
         rotationSpeed = Random.Range(-maxRotationSpeed, maxRotationSpeed);
+        transform.Rotate(Random.Range(-maxTwist, maxTwist), 0f, 0f);
 
         if (materials == null) {
             InitializeMaterials();    
@@ -64,6 +66,7 @@ public class Fractal : MonoBehaviour {
     {
         spawnProbability = parent.spawnProbability;
         maxRotationSpeed = parent.maxRotationSpeed;
+        maxTwist = parent.maxTwist;
         meshes = parent.meshes;
         materials = parent.materials;
         maxDepth = parent.maxDepth;
